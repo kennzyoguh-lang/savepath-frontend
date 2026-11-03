@@ -22,7 +22,7 @@ function Dashboard({ data }) {
       <header className="top">
         <div className="brand">
           <svg viewBox="0 0 32 32" aria-hidden><rect width="32" height="32" rx="9" fill="var(--brand)" /><path d="M8 20l6-6 4 4 6-8" fill="none" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
-          <div><b>SavePath</b><span>{data.household.name} · {data.household.location}</span></div>
+          <div><b>SavePath</b><span>From intention to habit · {data.household.location}</span></div>
         </div>
         <WalletBar wallet={wallet} />
       </header>

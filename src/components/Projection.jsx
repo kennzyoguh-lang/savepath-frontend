@@ -18,6 +18,9 @@ export default function Projection({ data, monthly, setMonthly, base }) {
   const area = `${line(scen)} L${x(nowIdx + future.length - 1)},${y(0)} L${x(nowIdx)},${y(0)} Z`
   const max = Math.max(Math.round(a.required * 2), Math.round(base * 2), 10000)
   const ticks = [0, 0.5, 1].map((t) => t * a.target)
+  const members = data.household.members || []
+  const income = members.reduce((s, m) => s + Number(m.monthly_income || 0), 0)
+  const need = Math.ceil(a.required / 1000) * 1000
 
   return (
     <section className="card" aria-labelledby="proj-h">
@@ -59,6 +62,16 @@ export default function Projection({ data, monthly, setMonthly, base }) {
           ? <>You would have <b>{money(a.projected, currency)}</b> by {new Date(data.goal.targetDate).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}, <b>{money(a.projected - a.target, currency)}</b> above the goal.</>
           : <>You would have <b>{money(a.projected, currency)}</b>, which is <b>{money(a.shortfall, currency)}</b> short. Saving <b>{money(Math.ceil(a.required / 1000) * 1000, currency)}</b> a month closes the gap.</>}
       </p>
+      {members.length > 1 && income > 0 && a.remaining > 0 && (
+        <div className="fair">
+          <h4>A fair split of the {money(need, currency)} needed each month</h4>
+          <ul>
+            {members.map((m) => (
+              <li key={m.id}><span>{m.name}</span><b>{money(Math.round((need * m.monthly_income) / income / 500) * 500, currency)}</b><small>{Math.round((m.monthly_income / income) * 100)}% of income</small></li>
+            ))}
+          </ul>
+        </div>
+      )}
     </section>
   )
 }
