@@ -1,46 +1,62 @@
+import { useMemo, useState } from 'react'
 import { useWallet } from './hooks/useWallet'
 import { useDashboardData } from './hooks/useDashboardData'
+import { analyse, currentMonthly } from './lib/projection'
 import WalletBar from './components/WalletBar'
-import { HouseholdPanel, GoalPanel, ContributionsPanel, TransactionsPanel } from './components/OffchainPanels'
+import Hero from './components/Hero'
+import Projection from './components/Projection'
+import ChainFeed from './components/ChainFeed'
+import { HouseholdPanel, ContributionsPanel, TransactionsPanel } from './components/OffchainPanels'
 import OnchainPanel from './components/OnchainPanel'
 import AIPanel from './components/AIPanel'
 
-export default function App() {
+function Dashboard({ data }) {
   const wallet = useWallet()
-  const { loading, error, data, reload } = useDashboardData()
+  const base = useMemo(() => currentMonthly(data), [data])
+  const [monthly, setMonthly] = useState(base)
+  const [tick, setTick] = useState(0)
+  const analysis = useMemo(() => analyse(data, monthly), [data, monthly])
   return (
-    <main>
-      <header>
-        <div>
-          <h1>Savings goal</h1>
-          {data && <p className="muted">{data.household.name} · {data.household.location} · synthetic profile</p>}
+    <>
+      <header className="top">
+        <div className="brand">
+          <svg viewBox="0 0 32 32" aria-hidden><rect width="32" height="32" rx="9" fill="var(--brand)" /><path d="M8 20l6-6 4 4 6-8" fill="none" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          <div><b>SavePath</b><span>{data.household.name} · {data.household.location}</span></div>
         </div>
         <WalletBar wallet={wallet} />
       </header>
-      {loading && <p>Loading dashboard…</p>}
-      {error && <p className="err" role="alert">Could not load data: {error} <button onClick={reload}>Try again</button></p>}
-      {data && (
-        <>
-          {data.source !== 'api' && (
-            <p className="notice">{data.source === 'sample' ? 'Showing built-in sample data. Set VITE_API_BASE_URL in .env to use the Apidog data.' : 'Some endpoints failed, so sample data fills the gaps.'}</p>
-          )}
-          {data.warnings.map((w) => <p className="notice" key={w}>{w}</p>)}
-          <div className="grid">
-            <div className="col">
-              <h3 className="colhead bank">Bank data (simulated)</h3>
-              <GoalPanel goal={data.goal} savings={data.savings} currency={data.currency} />
-              <HouseholdPanel household={data.household} currency={data.currency} />
-              <ContributionsPanel savings={data.savings} currency={data.currency} />
-              <TransactionsPanel transactions={data.transactions} />
-            </div>
-            <div className="col">
-              <h3 className="colhead chain">Blockchain (test network)</h3>
-              <OnchainPanel wallet={wallet} defaults={{ targetAmount: data.goal.targetAmount, targetDate: data.goal.targetDate }} />
-              <AIPanel data={data} />
-            </div>
+      <main>
+        {(data.source !== 'api' || data.warnings.length > 0) && (
+          <details className="notice">
+            <summary>{data.source === 'sample' ? 'Showing built-in sample data (the mock API is not configured).' : 'The bank data service did not answer, so sample data is shown.'}</summary>
+            {data.warnings.map((w) => <p key={w}>{w}</p>)}
+          </details>
+        )}
+        <Hero data={data} analysis={analysis} />
+        <div className="grid2">
+          <div className="col">
+            <Projection data={data} monthly={monthly} setMonthly={setMonthly} base={base} />
+            <AIPanel data={data} />
           </div>
-        </>
-      )}
-    </main>
+          <div className="col">
+            <OnchainPanel wallet={wallet} defaults={{ targetAmount: data.goal.targetAmount, targetDate: data.goal.targetDate }} onChange={() => setTick((t) => t + 1)} />
+            <ChainFeed currency={data.currency} refreshKey={tick} />
+          </div>
+        </div>
+        <div className="grid3">
+          <ContributionsPanel savings={data.savings} currency={data.currency} />
+          <TransactionsPanel transactions={data.transactions} />
+          <HouseholdPanel household={data.household} currency={data.currency} />
+        </div>
+        <footer>All figures are synthetic and the blockchain part runs on a test network. Insights are suggestions, not financial advice.</footer>
+      </main>
+    </>
   )
+}
+
+export default function App() {
+  const { loading, error, data, reload } = useDashboardData()
+  if (loading) return <div className="boot" role="status"><span className="spinner" /> Loading your savings…</div>
+  if (error) return <div className="boot err" role="alert">Could not load data: {error} <button onClick={reload}>Try again</button></div>
+  return <Dashboard data={data} />
 }

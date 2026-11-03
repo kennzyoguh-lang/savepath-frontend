@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import { readGoal, createGoal, recordContribution, txLink, friendlyError } from '../lib/savingsContract'
 
-export default function OnchainPanel({ wallet, defaults }) {
+export default function OnchainPanel({ wallet, defaults, onChange }) {
   const { signer, status, wrongNetwork } = wallet
   const [goal, setGoal] = useState(null)
   const [busy, setBusy] = useState(false)
@@ -21,19 +21,32 @@ export default function OnchainPanel({ wallet, defaults }) {
     try {
       const hash = await fn((h) => setMsg({ kind: 'pending', text: `${label}: waiting for confirmation…`, hash: h }))
       await refresh()
-      setMsg({ kind: 'ok', text: `${label}: confirmed.`, hash })
+      onChange?.()
+      setMsg({ kind: 'ok', text: `${label}: confirmed on-chain.`, hash })
     } catch (e) { setMsg({ kind: 'err', text: friendlyError(e) }) } finally { setBusy(false) }
   }
 
+  const steps = [
+    { n: 1, t: 'Connect wallet', done: status === 'connected' },
+    { n: 2, t: 'Celo Sepolia', done: ready },
+    { n: 3, t: 'Goal on-chain', done: Boolean(goal?.active) },
+  ]
+
   return (
-    <section className="panel chain">
-      <h2>On-chain demo record</h2>
-      <p className="muted">Celo Sepolia test network. These are demo records written by your wallet. No money moves and nothing here is checked against a real payment.</p>
-      {!ready ? <p>{status === 'connected' ? 'Switch to Celo Sepolia to continue.' : 'Connect a wallet to read or write your on-chain goal.'}</p> : (
+    <section className="card chain" aria-labelledby="chain-h">
+      <div className="card-head">
+        <h3 id="chain-h">Commit your goal on-chain</h3>
+        <span className="chip idle">Test network</span>
+      </div>
+      <ol className="steps">{steps.map((s) => <li key={s.n} className={s.done ? 'done' : ''}><span>{s.done ? '✓' : s.n}</span>{s.t}</li>)}</ol>
+      <p className="muted">Demo records written by your wallet on Celo Sepolia. No money moves and nothing is checked against a real payment.</p>
+      {!ready ? (
+        <p className="callout">{status === 'connected' ? 'Switch to Celo Sepolia to continue.' : 'Connect a wallet (top right) to record your goal and contributions.'}</p>
+      ) : (
         <>
-          {goal?.active ? (
-            <p className="big">{goal.totalContributed.toString()} <span>recorded of {goal.targetAmount.toString()} · due {new Date(goal.targetDate * 1000).toLocaleDateString()}</span></p>
-          ) : <p>No active on-chain goal for this wallet yet.</p>}
+          {goal?.active && (
+            <p className="big">{Number(goal.totalContributed).toLocaleString()} <span>recorded of {Number(goal.targetAmount).toLocaleString()} · due {new Date(goal.targetDate * 1000).toLocaleDateString()}</span></p>
+          )}
           <div className="form">
             <label>Target amount<input type="number" min="1" value={target} onChange={(e) => setTarget(e.target.value)} /></label>
             <label>Target date<input type="date" value={date} onChange={(e) => setDate(e.target.value)} /></label>
@@ -53,7 +66,7 @@ export default function OnchainPanel({ wallet, defaults }) {
       )}
       {msg && (
         <p className={`status ${msg.kind}`} role={msg.kind === 'err' ? 'alert' : 'status'}>
-          {msg.text} {msg.hash && <a href={txLink(msg.hash)} target="_blank" rel="noreferrer">View transaction</a>}
+          {msg.text} {msg.hash && <a href={txLink(msg.hash)} target="_blank" rel="noreferrer">View transaction ↗</a>}
         </p>
       )}
     </section>
