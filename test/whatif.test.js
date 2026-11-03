@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { categoryBaseline, simulate, nextAction } from '../src/lib/whatif.js'
+import { categoryBaseline, simulate, nextAction, withIllustrative } from '../src/lib/whatif.js'
 import { validateAmount, validateGoal } from '../src/lib/validate.js'
 
 const now = new Date('2026-07-15')
@@ -68,4 +68,12 @@ test('validateGoal rejects past dates and bad targets', () => {
   assert.equal(validateGoal('2000000', '2026-01-01', n).ok, false)
   assert.equal(validateGoal('0', '2027-10-01', n).ok, false)
   assert.equal(validateGoal('100', '', n).ok, false)
+})
+
+test('withIllustrative adds labelled synthetic categories only when missing', () => {
+  const out = withIllustrative([{ name: 'electricity', monthly: 25000 }, { name: 'groceries', monthly: 90000 }], 850000)
+  assert.deepEqual(out.map((c) => c.name), ['electricity', 'groceries', 'transport', 'other'])
+  assert.equal(out.filter((c) => c.synthetic).length, 2)
+  assert.equal(out.find((c) => c.name === 'transport').monthly, 68000)
+  assert.equal(withIllustrative([], 0).length, 0)
 })

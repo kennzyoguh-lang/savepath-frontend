@@ -67,7 +67,7 @@ export function riskIndicators({ data, analysis, monthly, spendingMonthly }) {
   return [
     { label: 'Goal pace', level: level(analysis.onTrack, gap < 0.2), detail: analysis.onTrack ? 'At this pace the goal is reached on time.' : `Projected ${Math.round(gap * 100)}% short of what is still needed.` },
     { label: 'Savings rate', level: level(rate >= 0.15, rate >= 0.08), detail: `${Math.round(rate * 100)}% of income goes to saving (15% or more is strong).` },
-    { label: 'Spending load', level: level(spendShare < 0.5, spendShare < 0.7), detail: spendingMonthly ? `Tracked spending is about ${Math.round(spendShare * 100)}% of income.` : 'No spending data to assess.' },
+    { label: 'Spending load', level: level(spendShare < 0.5, spendShare < 0.7), detail: spendingMonthly ? `Estimated spending is about ${Math.round(spendShare * 100)}% of income.` : 'No spending data to assess.' },
     { label: 'Consistency', level: level(stats.score >= 70, stats.score >= 40), detail: `${stats.metCount} of ${stats.months.length} months met the plan (score ${stats.score}).` },
     { label: 'Volatility', level: level(pace.variability < 0.25, pace.variability < 0.5), detail: pace.months ? `Monthly saving swings by about ${Math.round(pace.variability * 100)}% around its average.` : 'Not enough history.' },
   ]

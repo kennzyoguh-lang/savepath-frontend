@@ -24,12 +24,13 @@ export default function Simulator({ data, categories, sim, current, state, setSt
       </div>
       <p className="muted">Try changes to spending and saving. Every figure is plain arithmetic on this household's data and works even when AI is offline.</p>
 
+      {categories.some((c) => c.synthetic) && <p className="muted small">Categories marked <em className="syn">illustrative</em> are synthetic estimates (a share of household income), added because the supplied data lists electricity only. They are not real transactions.</p>}
       <div className="levers">
         {categories.map((c) => {
           const pct = levers[c.name] || 0
           return (
             <label key={c.name} className="lever">
-              <span><b>{cap(c.name)}</b> <small>{fmt(c.monthly)} → {fmt(c.monthly * (1 + pct / 100))} a month ({pct > 0 ? '+' : ''}{pct}%)</small></span>
+              <span><b>{cap(c.name)}</b>{c.synthetic && <em className="syn">illustrative</em>} <small>{fmt(c.monthly)} → {fmt(c.monthly * (1 + pct / 100))} a month ({pct > 0 ? '+' : ''}{pct}%)</small></span>
               <input type="range" min="-50" max="50" step="5" value={pct} onChange={(e) => set({ levers: { ...levers, [c.name]: Number(e.target.value) } })} />
             </label>
           )

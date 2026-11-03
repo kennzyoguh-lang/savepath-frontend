@@ -2,6 +2,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { BrowserProvider } from "ethers";
 import { EthereumProvider } from "@walletconnect/ethereum-provider";
 import { CHAIN_ID, CELO_SEPOLIA, RPC_URL, WC_PROJECT_ID } from "../lib/config";
+import { findMetaMask } from "../lib/walletDiscovery";
 
 const empty = {
   status: "disconnected",
@@ -72,12 +73,13 @@ export function useWallet() {
       try {
         let provider;
         if (kind === "injected") {
-          if (!window.ethereum)
+          const injected = (await findMetaMask()) || window.ethereum;
+          if (!injected)
             throw new Error(
               "No browser wallet found. Use WalletConnect or install MetaMask.",
             );
-          await window.ethereum.request({ method: "eth_requestAccounts" });
-          provider = window.ethereum;
+          await injected.request({ method: "eth_requestAccounts" });
+          provider = injected;
         } else {
           if (!WC_PROJECT_ID)
             throw new Error(

@@ -17,6 +17,18 @@ export function categoryBaseline(transactions = [], maxCategories = 4) {
   return [...head, { name: 'other', monthly: rest }]
 }
 
+// The supplied data lists few expense categories. The simulator adds clearly labelled, synthetic
+// estimates (shares of income) for the common household categories that are missing, so each lever can be tried.
+const SHARES = { food: 0.18, transport: 0.08, other: 0.05 }
+const ALIASES = { food: ['food', 'groceries', 'grocery'], transport: ['transport', 'transportation'], other: ['other', 'miscellaneous'] }
+export function withIllustrative(categories, income) {
+  const have = new Set(categories.map((c) => String(c.name).toLowerCase()))
+  const extra = Object.entries(SHARES)
+    .filter(([k]) => income > 0 && !ALIASES[k].some((a) => have.has(a)))
+    .map(([k, share]) => ({ name: k, monthly: Math.round((income * share) / 1000) * 1000, synthetic: true }))
+  return [...categories, ...extra]
+}
+
 export function simulate({ data, categories, levers = {}, baseMonthly, unexpected = 0, redirect = true, now = new Date() }) {
   const income = num(data.household.monthlyIncome)
   const target = num(data.goal.targetAmount)

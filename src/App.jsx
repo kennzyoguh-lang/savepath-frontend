@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useWallet } from './hooks/useWallet'
 import { useDashboardData } from './hooks/useDashboardData'
 import { analyse, currentMonthly } from './lib/projection'
-import { categoryBaseline, simulate } from './lib/whatif'
+import { categoryBaseline, simulate, withIllustrative } from './lib/whatif'
 import { spendingBreakdown } from './lib/habit'
 import WalletBar from './components/WalletBar'
 import Hero from './components/Hero'
@@ -19,7 +19,7 @@ import HabitPanel from './components/HabitPanel'
 function Dashboard({ data }) {
   const wallet = useWallet()
   const base = useMemo(() => currentMonthly(data), [data])
-  const categories = useMemo(() => categoryBaseline(data.transactions), [data])
+  const categories = useMemo(() => withIllustrative(categoryBaseline(data.transactions), data.household.monthlyIncome), [data])
   const spend = useMemo(() => spendingBreakdown(data.transactions), [data])
   const [scn, setScn] = useState({ baseMonthly: base, levers: {}, unexpected: 0, redirect: true })
   const [tick, setTick] = useState(0)
@@ -53,7 +53,7 @@ function Dashboard({ data }) {
           <div className="col">
             <Projection data={data} monthly={scn.baseMonthly} effective={sim.effectiveMonthly} setMonthly={(v) => setScn((s) => ({ ...s, baseMonthly: v }))} base={base} />
             <Simulator data={data} categories={categories} sim={sim} current={{ ...current, baseMonthly: base }} state={scn} setState={setScn} />
-            <Forecast data={data} analysis={scenario} monthly={sim.effectiveMonthly} spendingMonthly={spend.monthly} />
+            <Forecast data={data} analysis={scenario} monthly={sim.effectiveMonthly} spendingMonthly={sim.baselineExpenses} />
           </div>
           <div className="col">
             <HabitPanel data={data} analysis={current} monthly={base} />

@@ -123,3 +123,5 @@ footer { text-align: center; color: var(--muted); font-size: .8rem; padding-top:
 .guide { position: fixed; right: 16px; bottom: 16px; z-index: 20; width: min(360px, calc(100vw - 32px)); background: var(--surface); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 20px 50px rgba(0,0,0,.28); padding: 16px; display: flex; flex-direction: column; gap: 8px; } .guide-head { display: flex; justify-content: space-between; align-items: center; } .guide-nav { display: flex; gap: 8px; justify-content: flex-end; }
 .spot { outline: 3px solid var(--gold); outline-offset: 4px; transition: outline-color .3s; }
 .card, .hero { scroll-margin-top: 90px; }
+
+.syn { font-style: normal; font-size: .68rem; font-weight: 700; margin-left: 6px; padding: 2px 8px; border-radius: 99px; background: color-mix(in srgb, var(--gold) 24%, transparent); color: #8a6a0a; }

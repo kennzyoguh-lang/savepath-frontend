@@ -16,7 +16,7 @@ export default function WalletBar({ wallet }) {
         </>
       ) : (
         <>
-          <button disabled={status === 'connecting'} onClick={() => wallet.connect('injected')}>{status === 'connecting' ? 'Connecting…' : 'Connect wallet'}</button>
+          <button disabled={status === 'connecting'} onClick={() => wallet.connect('injected')}>{status === 'connecting' ? 'Connecting…' : 'Connect MetaMask'}</button>
           <button className="ghost" disabled={status === 'connecting'} onClick={() => wallet.connect('walletconnect')}>WalletConnect</button>
         </>
       )}
