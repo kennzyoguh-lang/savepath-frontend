@@ -1,5 +1,5 @@
 import { Contract } from "ethers";
-import { CONTRACT_ADDRESS, EXPLORER_URL } from "./config";
+import { CONTRACT_ADDRESS, EXPLORER_URL } from "./config.js";
 
 export const ABI = [
   "function createGoal(uint256 targetAmount, uint256 targetDate)",

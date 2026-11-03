@@ -85,7 +85,7 @@ const onGetGoal = async () => {
       )}
       {msg && (
         <p className={`status ${msg.kind}`} role={msg.kind === 'err' ? 'alert' : 'status'}>
-          {msg.text} {msg.hash && <a href={txLink(msg.hash)} target="_blank" rel="noreferrer">View transaction ↗</a>}
+          {msg.text} {msg.hash && <><code title={msg.hash}>{msg.hash.slice(0, 10)}…{msg.hash.slice(-6)}</code> <a href={txLink(msg.hash)} target="_blank" rel="noreferrer">View transaction ↗</a></>}
         </p>
       )}
     </section>

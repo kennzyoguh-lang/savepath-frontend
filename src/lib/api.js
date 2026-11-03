@@ -1,5 +1,5 @@
-import { MOCK_API_BASE_URL } from "./config";
-import { sampleRaw } from "./mockData";
+import { MOCK_API_BASE_URL } from "./config.js";
+import { sampleRaw } from "./mockData.js";
 
 // Data adapter. The UI only calls loadAll() and receives a clean view model.
 // Everything specific to the API response shapes lives in this file.

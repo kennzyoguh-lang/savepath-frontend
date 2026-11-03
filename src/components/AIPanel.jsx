@@ -5,7 +5,7 @@ import { money } from '../lib/projection'
 const LABELS = {
   live: 'AI-generated from the data on this page.',
   mockapi: 'Sample response from the mock API. It is fixed text, not generated from this data.',
-  backendmock: 'Placeholder from the backend (AI is not set to live).',
+  backendmock: 'Pre-written analysis from the backend: live AI is switched off or was unavailable for this request.',
   mock: 'Local placeholder: simple rules, no AI service connected.',
   fallback: 'The AI service was unavailable, so this is a local placeholder.',
 }

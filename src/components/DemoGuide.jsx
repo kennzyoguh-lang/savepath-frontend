@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 // Story for the jury. Every step says whether it is synthetic data, a local simulation, or a live testnet action.
 const STEPS = [
@@ -18,6 +18,7 @@ const STEPS = [
 export default function DemoGuide({ open, onClose }) {
   const [i, setI] = useState(0)
   const [started, setStarted] = useState(false)
+  const timer = useRef(null)
   if (!open) return null
   const step = STEPS[i]
   const go = (n) => {
@@ -26,8 +27,10 @@ export default function DemoGuide({ open, onClose }) {
     const el = document.getElementById(STEPS[k].id)
     if (el) {
       el.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' })
+      clearTimeout(timer.current)
+      document.querySelectorAll('.spot').forEach((e) => e.classList.remove('spot'))
       el.classList.add('spot')
-      setTimeout(() => el.classList.remove('spot'), 2200)
+      timer.current = setTimeout(() => el.classList.remove('spot'), 2200)
     }
   }
   return (
