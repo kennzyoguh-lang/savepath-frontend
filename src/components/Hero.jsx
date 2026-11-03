@@ -19,7 +19,7 @@ export default function Hero({ data, analysis }) {
     <section className="hero" aria-label="Goal summary">
       <Ring percent={a.percent} />
       <div className="hero-main">
-        <p className="eyebrow">{goal.purpose || 'Savings goal'}</p>
+        <p className="eyebrow">{goal.purpose || 'Savings goal'} · 12-month plan</p>
         <h2>{goal.name}</h2>
         <p className="hero-amount">{money(a.balance, currency)} <span>of {money(a.target, currency)}</span></p>
         <p className={`verdict ${a.onTrack ? 'good' : 'warn'}`}>

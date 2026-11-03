@@ -8,7 +8,7 @@ export default function OnchainPanel({ wallet, defaults, onChange }) {
   const [msg, setMsg] = useState(null) // { kind: 'ok' | 'err' | 'pending', text, hash? }
   const [target, setTarget] = useState(defaults.targetAmount)
   const [date, setDate] = useState(defaults.targetDate)
-  const [amount, setAmount] = useState(5000)
+  const [amount, setAmount] = useState(defaults.contribution || 5000)
   const ready = status === 'connected' && !wrongNetwork
 
   const refresh = useCallback(async () => {

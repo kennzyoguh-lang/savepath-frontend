@@ -9,6 +9,7 @@ import ChainFeed from './components/ChainFeed'
 import { HouseholdPanel, ContributionsPanel, TransactionsPanel } from './components/OffchainPanels'
 import OnchainPanel from './components/OnchainPanel'
 import AIPanel from './components/AIPanel'
+import HabitPanel from './components/HabitPanel'
 
 function Dashboard({ data }) {
   const wallet = useWallet()
@@ -36,10 +37,11 @@ function Dashboard({ data }) {
         <div className="grid2">
           <div className="col">
             <Projection data={data} monthly={monthly} setMonthly={setMonthly} base={base} />
+            <HabitPanel data={data} analysis={analysis} monthly={monthly} />
             <AIPanel data={data} />
           </div>
           <div className="col">
-            <OnchainPanel wallet={wallet} defaults={{ targetAmount: data.goal.targetAmount, targetDate: data.goal.targetDate }} onChange={() => setTick((t) => t + 1)} />
+            <OnchainPanel wallet={wallet} defaults={{ targetAmount: data.goal.targetAmount, targetDate: data.goal.targetDate, contribution: Math.max(1000, Math.ceil(analysis.required / 1000) * 1000) }} onChange={() => setTick((t) => t + 1)} />
             <ChainFeed currency={data.currency} refreshKey={tick} />
           </div>
         </div>
