@@ -1,4 +1,4 @@
-import { AI_API_URL, MOCK_API_BASE_URL } from "./config";
+import { AI_API_URL, MOCK_API_BASE_URL } from "./config.js";
 
 // Request/response follow the Apidog contract for POST /ai/analyse-savings.
 // The backend may also return meta{source,confidence,disclaimer} and facts{...}; both are optional.

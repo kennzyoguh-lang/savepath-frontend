@@ -103,3 +103,23 @@ footer { text-align: center; color: var(--muted); font-size: .8rem; padding-top:
 .fair h4 { font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 6px; } .fair ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px; } .fair li { border: 1px solid var(--line); border-radius: 12px; padding: 8px 12px; display: grid; } .fair li b { font-size: 1.05rem; } .fair small { color: var(--muted); }
 
 .slider label { display: block; color: var(--ink); font-weight: 500; font-size: .95rem; }
+
+/* Navy / emerald / gold direction */
+:root { --bg: #f6f4ef; --gold: #d9a521; --navy: #0b1f3a; }
+.hero { background: radial-gradient(900px 380px at 95% -10%, rgba(20, 184, 143, .38), transparent), linear-gradient(135deg, #0b1f3a, #0d3550 58%, #0e6b63); }
+.brand span { letter-spacing: .01em; }
+.top-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+/* Simulator, forecast, demo guide */
+.levers { display: flex; flex-direction: column; gap: 10px; } .lever { display: flex; flex-direction: column; gap: 2px; color: var(--ink); font-weight: 500; } .lever b { font-weight: 700; } .lever small { margin-left: 6px; }
+.check { flex-direction: row; align-items: center; gap: 8px; font-weight: 500; color: var(--ink); } .check input { width: 18px; height: 18px; accent-color: var(--brand); }
+.compare { display: flex; flex-direction: column; gap: 8px; } .cmp-row { display: grid; grid-template-columns: 96px 1fr auto; gap: 10px; align-items: center; font-size: .85rem; } .cmp-track { height: 12px; background: var(--line); border-radius: 99px; overflow: hidden; } .cmp-track i { display: block; height: 100%; border-radius: 99px; transition: width .5s cubic-bezier(.2,.8,.2,1); }
+.cmp-track .cur { background: var(--muted); } .cmp-track .scn { background: var(--warn); } .cmp-track .ok { background: var(--good); } .cmp-track .goal { background: var(--gold); }
+.whatif.bad { background: color-mix(in srgb, var(--warn) 14%, transparent); }
+.fc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; } .fc { border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; } .fc.on { border-color: var(--good); } .fc h4 { margin: 0; } .fc-amt { font-size: 1.25rem; font-weight: 800; letter-spacing: -.02em; }
+.risks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; } .risks li { display: flex; gap: 12px; align-items: flex-start; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; } .risks p { font-size: .85rem; color: var(--muted); } .lvl { font-size: .7rem; font-weight: 800; padding: 3px 9px; border-radius: 99px; white-space: nowrap; margin-top: 2px; }
+.risks .good .lvl { background: color-mix(in srgb, var(--good) 16%, transparent); color: var(--good); } .risks .watch .lvl { background: color-mix(in srgb, var(--gold) 22%, transparent); color: #8a6a0a; } .risks .risk .lvl { background: color-mix(in srgb, var(--warn) 16%, transparent); color: var(--warn); }
+.miles { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; } .miles li { border: 1px solid var(--line); border-radius: 12px; padding: 8px; display: grid; justify-items: center; gap: 2px; text-align: center; } .miles span { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--line); font-size: .75rem; font-weight: 700; } .miles .done { border-color: var(--gold); } .miles .done span { background: var(--gold); color: #fff; }
+.guide { position: fixed; right: 16px; bottom: 16px; z-index: 20; width: min(360px, calc(100vw - 32px)); background: var(--surface); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 20px 50px rgba(0,0,0,.28); padding: 16px; display: flex; flex-direction: column; gap: 8px; } .guide-head { display: flex; justify-content: space-between; align-items: center; } .guide-nav { display: flex; gap: 8px; justify-content: flex-end; }
+.spot { outline: 3px solid var(--gold); outline-offset: 4px; transition: outline-color .3s; }
+.card, .hero { scroll-margin-top: 90px; }

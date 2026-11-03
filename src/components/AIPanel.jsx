@@ -39,10 +39,10 @@ export default function AIPanel({ data }) {
   useEffect(() => { if (!started.current) { started.current = true; run(false) } }, []) // eslint-disable-line
 
   return (
-    <section className="card" aria-labelledby="ai-h" aria-busy={loading}>
+    <section className="card" id="sec-ai" aria-labelledby="ai-h" aria-busy={loading}>
       <div className="card-head">
         <h3 id="ai-h">Savings coach</h3>
-        {insight && <span className={`chip ${insight.source === 'live' ? 'good' : 'idle'}`}>{insight.source === 'live' ? 'AI' : 'Fallback'}</span>}
+        {insight && <span className={`chip ${insight.source === 'live' ? 'good' : 'idle'}`}>{insight.source === 'live' ? 'Live AI' : 'Fallback analysis'}</span>}
       </div>
       {loading && !insight && <div className="skeleton" aria-label="Analysing your savings"><i /><i /><i /><i /></div>}
       {insight && (

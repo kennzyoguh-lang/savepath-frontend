@@ -1,9 +1,9 @@
-# SavePath: from intention to habit
+# SaveTogether AI: Smarter Savings. Stronger Households.
 
 A household savings coach for David and Amara, a young Nigerian couple saving ₦2 million over 12 months.
 Built for the AI × Web3 Developers Challenge (theme: *Resilient Households, Smarter Savings*).
 
-Most savings apps only show a balance. SavePath focuses on the real problem in the brief: **staying consistent**.
+Most savings apps only show a balance. SaveTogether AI focuses on the real problem in the brief: **staying consistent**.
 It shows how the habit is going, what-if scenarios, AI coaching, and a verifiable on-chain record of every commitment.
 
 ## What it does (mapped to the brief)
@@ -18,6 +18,9 @@ It shows how the habit is going, what-if scenarios, AI coaching, and a verifiabl
 | F. User experience | Responsive, dark mode, keyboard and screen-reader friendly, loading and error states |
 
 ### What goes beyond a tracker
+- **What-if simulator**: change spending per category and add an unexpected expense. Free cash, projected balance, shortfall or surplus, finish date and a scenario comparison update instantly, with no AI needed. Clearly labelled *Simulated, not saved*.
+- **Success forecast**: conservative, baseline and optimistic scenarios from the last three months of saving, a resilience check (pace, savings rate, spending load, consistency, volatility) and milestones. These are explained arithmetic, not machine learning, and never presented as guarantees.
+- **Jury demo guide**: a step-by-step tour that labels each step as synthetic data, simulated, calculated, or live on testnet.
 - **Savings habit score**: consistency score, saving streak, best streak, and a bar per month against the plan, with plain-language coaching (protect the weakest month, set a floor for hard months, catch up in small steps, find the spending lever).
 - **What-if projection**: drag "if I save ₦X a month" and instantly see the projected balance, the shortfall or surplus, and the finish date. Every number is computed in code, never by the AI.
 - **Verified on Celo**: the backend watches the SavingsGoal contract and the dashboard shows each goal and contribution as it is confirmed on-chain, with explorer links. The suggested contribution to record is pre-filled with the amount needed to stay on plan.
@@ -35,6 +38,11 @@ Browser (React + Vite)
 - `src/lib/projection.js`, `src/lib/habit.js`: pure functions for projections and habit analytics (unit tested).
 - `src/lib/api.js`, `src/lib/ai.js`, `src/lib/savingsContract.js`: the provided integrations (data adapter, AI client, contract client), reused rather than rewritten.
 - `src/components/`: one component per card. `App.jsx` composes them.
+
+## How the scores are calculated
+- **Consistency score** (0 to 100): each month counts 1 if saving met the plan, 0.5 if it reached half or more, 0 otherwise. The score is the average. Streaks count consecutive months with any saving.
+- **Forecasts**: baseline = average of the last three recorded months; conservative = 75% of it; optimistic = the household's own monthly plan (or 115% of baseline if higher). Projected balance = current balance + monthly saving × months left.
+- **Simulator**: scenario spending = category spend × (1 + change); freed cash can be redirected to saving; an unexpected expense is subtracted from the projected balance. Only categories present in the supplied data are shown; nothing is invented.
 
 ## Key decisions
 1. **Numbers in code, words from AI.** Projections and habit scores are deterministic and tested. The AI only explains figures the backend already calculated and validated, so it cannot invent numbers.
@@ -68,3 +76,20 @@ Needs MetaMask on Celo Sepolia (the app offers to add the network) and a little 
 - Synthetic data only. Contribution records are numbers on a testnet, not payments.
 - Goals belong to one wallet address, so a couple shares a goal by using one wallet for the shared goal.
 - If the hosted mock API is unreachable, the app shows built-in sample data and says so.
+
+## Evidence
+- `npm test`: 25 unit tests pass (projection, forecasting, what-if scenarios, habit scoring, input validation, AI payload and fallback behaviour).
+- `npm run build`: production build passes.
+- On-chain: a goal and a contribution were created from a real wallet on Celo Sepolia and appeared in the backend feed and the dashboard.
+- Live AI depends on the shared Mistral key and can be rate limited; the interface shows "Live AI" or "Fallback analysis" so it is always clear which is shown.
+
+## 60-second pitch
+David and Amara earn well enough to save, but their saving is inconsistent, and an app that only shows a balance will not fix that. SaveTogether AI turns their data into a habit: a plain-language consistency score, a what-if simulator that shows exactly what a change in spending does to the goal, and AI coaching that explains the numbers the code has already calculated. Every goal and contribution is committed to a smart contract on Celo, so the household has an independent, verifiable record of its promises to each other. AI turns information into action; Web3 turns intention into a commitment you can prove.
+
+## Differentiators
+1. Numbers from code, words from AI: the AI cannot invent figures.
+2. Works when AI or the data service fails (labelled fallbacks everywhere).
+3. A what-if simulator and forecast built on explicit, documented assumptions.
+4. Habit focus (consistency, streaks, floors for hard months) instead of another balance screen.
+5. Verifiable on-chain commitments with a live "Verified on Celo" feed.
+6. A built-in demo guide that is honest about what is simulated versus live.

@@ -3,9 +3,9 @@ import { money, monthLabel, series } from '../lib/projection'
 
 const W = 640, H = 250, P = { l: 56, r: 16, t: 16, b: 28 }
 
-export default function Projection({ data, monthly, setMonthly, base }) {
+export default function Projection({ data, monthly, effective, setMonthly, base }) {
   const { currency } = data
-  const { past, future, a } = useMemo(() => series(data, monthly), [data, monthly])
+  const { past, future, a } = useMemo(() => series(data, effective), [data, effective])
   const n = past.length + future.length - 1
   const ymax = Math.max(a.target, ...past.map((p) => p.v), ...future.map((f) => f.scenario), 1) * 1.08
   const x = (i) => P.l + (i / Math.max(n, 1)) * (W - P.l - P.r)
@@ -23,10 +23,10 @@ export default function Projection({ data, monthly, setMonthly, base }) {
   const need = Math.ceil(a.required / 1000) * 1000
 
   return (
-    <section className="card" aria-labelledby="proj-h">
+    <section className="card" id="sec-proj" aria-labelledby="proj-h">
       <div className="card-head">
         <h3 id="proj-h">Savings projection</h3>
-        <span className={`chip ${a.onTrack ? 'good' : 'warn'}`}>{a.onTrack ? 'Reaches goal' : 'Misses goal'}</span>
+        <span className={`chip ${a.onTrack ? 'good' : 'warn'}`}>{a.onTrack ? 'Reaches goal' : 'Misses goal'} · simulated</span>
       </div>
       <svg viewBox={`0 0 ${W} ${H}`} className="chart" role="img"
         aria-label={`Projected balance ${money(a.projected, currency)} against a target of ${money(a.target, currency)}`}>
@@ -53,7 +53,7 @@ export default function Projection({ data, monthly, setMonthly, base }) {
       </ul>
 
       <div className="slider">
-        <label htmlFor="monthly">If I save <b>{money(monthly, currency)}</b> a month…</label>
+        <label htmlFor="monthly">If we save <b>{money(monthly, currency)}</b> a month…{Math.round(effective) !== Math.round(monthly) && <small> (scenario makes it {money(effective, currency)})</small>}</label>
         <input id="monthly" type="range" min="0" max={max} step="5000" value={monthly} onChange={(e) => setMonthly(Number(e.target.value))} />
         <div className="slider-ends"><span>{money(0, currency)}</span><button className="link" onClick={() => setMonthly(base)}>Reset to current</button><span>{money(max, currency)}</span></div>
       </div>

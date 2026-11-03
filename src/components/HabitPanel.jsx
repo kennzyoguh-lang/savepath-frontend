@@ -15,7 +15,7 @@ export default function HabitPanel({ data, analysis, monthly }) {
   const share = (v) => (income ? Math.max(2, Math.round((v / income) * 100)) : 0)
 
   return (
-    <section className="card habit" aria-labelledby="habit-h">
+    <section className="card habit" id="sec-habit" aria-labelledby="habit-h">
       <div className="card-head">
         <h3 id="habit-h">Savings habit</h3>
         <span className={`chip ${stats.score >= 55 ? 'good' : 'warn'}`}>{stats.level}</span>

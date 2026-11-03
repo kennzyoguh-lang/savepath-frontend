@@ -16,7 +16,7 @@ export default function Hero({ data, analysis }) {
   const { goal, currency } = data
   const a = analysis
   return (
-    <section className="hero" aria-label="Goal summary">
+    <section className="hero" id="sec-goal" aria-label="Goal summary">
       <Ring percent={a.percent} />
       <div className="hero-main">
         <p className="eyebrow">{goal.purpose || 'Savings goal'} · 12-month plan</p>

@@ -26,7 +26,7 @@ export default function ChainFeed({ currency, refreshKey }) {
 
   const { goal, items, status } = state
   return (
-    <section className="card" aria-labelledby="feed-h">
+    <section className="card" id="sec-feed" aria-labelledby="feed-h">
       <div className="card-head">
         <h3 id="feed-h">Verified on Celo</h3>
         <span className={`chip ${status === 'ok' ? 'good' : 'idle'}`}>{status === 'ok' ? 'Live' : status === 'loading' ? 'Syncing' : 'Offline'}</span>

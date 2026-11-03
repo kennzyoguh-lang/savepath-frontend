@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react'
+import { validateAmount, validateGoal } from '../lib/validate'
 import { readGoal, createGoal, recordContribution, txLink, friendlyError } from '../lib/savingsContract'
 
 export default function OnchainPanel({ wallet, defaults, onChange }) {
@@ -10,6 +11,8 @@ export default function OnchainPanel({ wallet, defaults, onChange }) {
   const [date, setDate] = useState(defaults.targetDate)
   const [amount, setAmount] = useState(defaults.contribution || 5000)
   const ready = status === 'connected' && !wrongNetwork
+  const goalCheck = validateGoal(target, date)
+  const amountCheck = validateAmount(amount, 'Contribution')
 
   const refresh = useCallback(async () => {
     try { setGoal(await readGoal(signer)) } catch (e) { setMsg({ kind: 'err', text: friendlyError(e) }) }
@@ -33,7 +36,7 @@ export default function OnchainPanel({ wallet, defaults, onChange }) {
   ]
 
   return (
-    <section className="card chain" aria-labelledby="chain-h">
+    <section className="card chain" id="sec-chain" aria-labelledby="chain-h">
       <div className="card-head">
         <h3 id="chain-h">Commit your goal on-chain</h3>
         <span className="chip idle">Test network</span>
@@ -50,18 +53,20 @@ export default function OnchainPanel({ wallet, defaults, onChange }) {
           <div className="form">
             <label>Target amount<input type="number" min="1" value={target} onChange={(e) => setTarget(e.target.value)} /></label>
             <label>Target date<input type="date" value={date} onChange={(e) => setDate(e.target.value)} /></label>
-            <button disabled={busy || !(Number(target) > 0) || !date}
-              onClick={() => run('Create goal', (cb) => createGoal(signer, target, Math.floor(new Date(date).getTime() / 1000), cb))}>
+            <button disabled={busy || !goalCheck.ok}
+              onClick={() => run('Create goal', (cb) => createGoal(signer, goalCheck.value.target, goalCheck.value.dateUnix, cb))}>
               {goal?.active ? 'Replace goal' : 'Create goal'}
             </button>
           </div>
+          {!goalCheck.ok && <p className="err small" role="alert">{goalCheck.error}</p>}
           {goal?.active && <p className="muted">Replacing the goal resets the recorded total to 0.</p>}
           {goal?.active && (
             <div className="form">
               <label>Contribution to record<input type="number" min="1" value={amount} onChange={(e) => setAmount(e.target.value)} /></label>
-              <button disabled={busy || !(Number(amount) > 0)} onClick={() => run('Record contribution', (cb) => recordContribution(signer, amount, cb))}>Record contribution</button>
+              <button disabled={busy || !amountCheck.ok} onClick={() => run('Record contribution', (cb) => recordContribution(signer, amountCheck.value, cb))}>Record contribution</button>
             </div>
           )}
+          {goal?.active && !amountCheck.ok && <p className="err small" role="alert">{amountCheck.error}</p>}
         </>
       )}
       {msg && (

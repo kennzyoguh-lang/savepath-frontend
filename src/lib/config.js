@@ -1,4 +1,4 @@
-const env = import.meta.env;
+const env = import.meta.env ?? {};
 export const CHAIN_ID = Number(env.VITE_CHAIN_ID || 11142220);
 export const RPC_URL =
   env.VITE_RPC_URL || "https://forno.celo-sepolia.celo-testnet.org";

@@ -2,9 +2,14 @@ import { useMemo, useState } from 'react'
 import { useWallet } from './hooks/useWallet'
 import { useDashboardData } from './hooks/useDashboardData'
 import { analyse, currentMonthly } from './lib/projection'
+import { categoryBaseline, simulate } from './lib/whatif'
+import { spendingBreakdown } from './lib/habit'
 import WalletBar from './components/WalletBar'
 import Hero from './components/Hero'
 import Projection from './components/Projection'
+import Simulator from './components/Simulator'
+import Forecast from './components/Forecast'
+import DemoGuide from './components/DemoGuide'
 import ChainFeed from './components/ChainFeed'
 import { HouseholdPanel, ContributionsPanel, TransactionsPanel } from './components/OffchainPanels'
 import OnchainPanel from './components/OnchainPanel'
@@ -14,17 +19,27 @@ import HabitPanel from './components/HabitPanel'
 function Dashboard({ data }) {
   const wallet = useWallet()
   const base = useMemo(() => currentMonthly(data), [data])
-  const [monthly, setMonthly] = useState(base)
+  const categories = useMemo(() => categoryBaseline(data.transactions), [data])
+  const spend = useMemo(() => spendingBreakdown(data.transactions), [data])
+  const [scn, setScn] = useState({ baseMonthly: base, levers: {}, unexpected: 0, redirect: true })
   const [tick, setTick] = useState(0)
-  const analysis = useMemo(() => analyse(data, monthly), [data, monthly])
+  const [guide, setGuide] = useState(false)
+
+  const current = useMemo(() => analyse(data, base), [data, base])
+  const sim = useMemo(() => simulate({ data, categories, levers: scn.levers, baseMonthly: scn.baseMonthly, unexpected: scn.unexpected, redirect: scn.redirect }), [data, categories, scn])
+  const scenario = useMemo(() => analyse(data, sim.effectiveMonthly), [data, sim.effectiveMonthly])
+
   return (
     <>
       <header className="top">
         <div className="brand">
           <svg viewBox="0 0 32 32" aria-hidden><rect width="32" height="32" rx="9" fill="var(--brand)" /><path d="M8 20l6-6 4 4 6-8" fill="none" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
-          <div><b>SavePath</b><span>From intention to habit · {data.household.location}</span></div>
+          <div><b>SaveTogether AI</b><span>Smarter Savings. Stronger Households.</span></div>
         </div>
-        <WalletBar wallet={wallet} />
+        <div className="top-actions">
+          <button className="ghost" onClick={() => setGuide((g) => !g)} aria-expanded={guide}>Jury demo</button>
+          <WalletBar wallet={wallet} />
+        </div>
       </header>
       <main>
         {(data.source !== 'api' || data.warnings.length > 0) && (
@@ -33,15 +48,17 @@ function Dashboard({ data }) {
             {data.warnings.map((w) => <p key={w}>{w}</p>)}
           </details>
         )}
-        <Hero data={data} analysis={analysis} />
+        <Hero data={data} analysis={current} />
         <div className="grid2">
           <div className="col">
-            <Projection data={data} monthly={monthly} setMonthly={setMonthly} base={base} />
-            <HabitPanel data={data} analysis={analysis} monthly={monthly} />
-            <AIPanel data={data} />
+            <Projection data={data} monthly={scn.baseMonthly} effective={sim.effectiveMonthly} setMonthly={(v) => setScn((s) => ({ ...s, baseMonthly: v }))} base={base} />
+            <Simulator data={data} categories={categories} sim={sim} current={{ ...current, baseMonthly: base }} state={scn} setState={setScn} />
+            <Forecast data={data} analysis={scenario} monthly={sim.effectiveMonthly} spendingMonthly={spend.monthly} />
           </div>
           <div className="col">
-            <OnchainPanel wallet={wallet} defaults={{ targetAmount: data.goal.targetAmount, targetDate: data.goal.targetDate, contribution: Math.max(1000, Math.ceil(analysis.required / 1000) * 1000) }} onChange={() => setTick((t) => t + 1)} />
+            <HabitPanel data={data} analysis={current} monthly={base} />
+            <AIPanel data={data} />
+            <OnchainPanel wallet={wallet} defaults={{ targetAmount: data.goal.targetAmount, targetDate: data.goal.targetDate, contribution: Math.max(1000, Math.ceil(current.required / 1000) * 1000) }} onChange={() => setTick((t) => t + 1)} />
             <ChainFeed currency={data.currency} refreshKey={tick} />
           </div>
         </div>
@@ -50,8 +67,9 @@ function Dashboard({ data }) {
           <TransactionsPanel transactions={data.transactions} />
           <HouseholdPanel household={data.household} currency={data.currency} />
         </div>
-        <footer>All figures are synthetic and the blockchain part runs on a test network. Insights are suggestions, not financial advice.</footer>
+        <footer>All figures are synthetic and the blockchain part runs on a test network: contract records are numbers, not money. Insights and forecasts are suggestions, not financial advice.</footer>
       </main>
+      <DemoGuide open={guide} onClose={() => setGuide(false)} />
     </>
   )
 }
